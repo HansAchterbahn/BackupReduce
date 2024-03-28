@@ -6,9 +6,10 @@ import logging
 
 def find_first_unique_item_in_list(items:list, amount:int=0, direction:str= "backward"):
     # looks for the first unique entries in a given list and returns these entries and their IDs
-    # items     :list:  list with entries
-    # amount    :int:   amount of unique items to be returned
-    # direction :str:   describes the count direction in the list of unique items for return
+    # parameters
+    # - items       :list:  list with entries
+    # - amount      :int:   amount of unique items to be returned
+    # - direction   :str:   describes the count direction in the list of unique items for return
 
     # loops to the list, check for unique items and add them to a unique item list
     items_unique = []
@@ -28,21 +29,20 @@ def find_first_unique_item_in_list(items:list, amount:int=0, direction:str= "bac
     else:
         return items_unique
 
-if __name__ == "__main__":
-
-    # User definitions
-    file_ammount = 7                            # How many files should be ceeped per type (yearly, monthly, weekly, dayly)?
-    file_location = ".Contacts-Backup"          # Where are the files located?
-    remove_folder = "remove"                    # How should the folder be named to move the unwanted files to? (ex. remove, /dev/null)
+def reduce_backup_files(file_amount:int = 7, file_path:str = "", remove_folder_path = "remove"):
+    # Parameters
+    # - file_amount         :int:   files to ceeped per type (yearly, monthly, weekly, daily)
+    # - file_path           :str:   path to the backup files
+    # - remove_folder_path  :str:   path/folder to move the unwanted files to (ex. remove, /dev/null)
 
     # Set up logging
     #logging.basicConfig(filename='remove.log', filemode='a', format='%(name)s - %(levelname)s - %(message)s')
-    logging.basicConfig(filename=file_location+'.log', format='%(message)s', level=logging.INFO)
+    logging.basicConfig(filename=file_path + '.log', format='%(message)s', level=logging.INFO)
     logging.info("["+str(datetime.now())+"]")
 
 
     # read the file list and sort it
-    files = [f for f in os.listdir(file_location) if os.path.isfile(os.path.join(file_location, f))]
+    files = [f for f in os.listdir(file_path) if os.path.isfile(os.path.join(file_path, f))]
     files = natsort.natsorted(files)
 
     # create empty lists for yearly, monthly, weekly and daily backups
@@ -60,10 +60,10 @@ if __name__ == "__main__":
         daily.append(datetime.strptime(date, "%Y-%m-%d").strftime("%Y-%m-%d"))
 
     # find first unique items in wanted amount and direction for yearly, monthly, weekly and daily backups
-    yearly = find_first_unique_item_in_list(yearly, file_ammount, "backward")
-    monthly = find_first_unique_item_in_list(monthly, file_ammount, "backward")
-    weekly = find_first_unique_item_in_list(weekly, file_ammount, "backward")
-    daily = find_first_unique_item_in_list(daily, file_ammount, "backward")
+    yearly = find_first_unique_item_in_list(yearly, file_amount, "backward")
+    monthly = find_first_unique_item_in_list(monthly, file_amount, "backward")
+    weekly = find_first_unique_item_in_list(weekly, file_amount, "backward")
+    daily = find_first_unique_item_in_list(daily, file_amount, "backward")
 
     # log separat keep lists
     logging.info("Years match: %s", yearly)
@@ -73,7 +73,7 @@ if __name__ == "__main__":
 
     # merge all wanted unique items together in the keep file list by looping to every separate list
     keep_files = set([])
-    keep_ids = set ([])
+    keep_ids = set([])
     for list in [daily, weekly, monthly, yearly]:
         for item in list:
             keep_ids.add(item[0])
@@ -89,7 +89,7 @@ if __name__ == "__main__":
 
     # create remove folder if not exist
     try:
-        os.makedirs(file_location + "/" + remove_folder)
+        os.makedirs(remove_folder_path)
     except:
         pass
 
@@ -97,4 +97,8 @@ if __name__ == "__main__":
 
     # remove files from remove list
     for file in remove_files:
-        os.rename(str(file_location+"/"+file), str(file_location+"/"+remove_folder+"/"+file))
+        os.rename(str(file_path + "/" + file), str(remove_folder_path + "/" + file))
+
+
+if __name__ == "__main__":
+    reduce_backup_files(file_amount=7, file_path=".Contacts-Backup", remove_folder_path=".Contacts-Backup/remove")

@@ -70,7 +70,7 @@ def reduce_backup_files(file_amount:int = 7, file_path:str = "", remove_folder_p
 
     # generate keep and remove files list & remove files from remove file list
     for prefix in prefixes_dict:
-        keep_files, remove_files = calculate_keep_and_remove_files(prefixes_dict[prefix])
+        keep_files, remove_files = calculate_keep_and_remove_files(files=prefixes_dict[prefix], backup_amount=file_amount)
         logging.info("Remove prefix list %s: \n- %s", prefix, remove_files)
         for file in remove_files:
             os.rename(str(file_path + "/" + file), str(remove_folder_path + "/" + file))
@@ -134,4 +134,4 @@ if __name__ == "__main__":
 
     # run script
     for file_path in file_paths:
-        reduce_backup_files(file_amount=7, file_path=file_path, remove_folder_path=file_path+"/remove")
+        reduce_backup_files(file_amount=backup_amount, file_path=file_path, remove_folder_path=file_path+"/remove")

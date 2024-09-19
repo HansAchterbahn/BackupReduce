@@ -129,9 +129,13 @@ def calculate_keep_and_remove_files(files:list, backup_amount:int=7, yearly:bool
 
 if __name__ == "__main__":
     # user Settings
-    backup_amount = 7
-    file_paths = [".Contacts-Backup", ".Calendar-Backup", ".KeePassXC-Backup", ".Signal-Backup"]
+    backups = [
+        {"path": ".Contacts-Backup",  "amount": 7},
+        {"path": ".Calendar-Backup",  "amount": 7},
+        {"path": ".KeePassXC-Backup", "amount": 7},
+        {"path": ".Signal-Backup",    "amount": 4}
+    ]
 
     # run script
-    for file_path in file_paths:
-        reduce_backup_files(file_amount=backup_amount, file_path=file_path, remove_folder_path=file_path+"/remove")
+    for backup in backups:
+        reduce_backup_files(file_amount=backup["amount"], file_path=backup["path"], remove_folder_path=backup["path"]+"/remove")
